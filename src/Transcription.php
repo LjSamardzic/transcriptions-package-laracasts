@@ -4,13 +4,11 @@ namespace Laracasts\Transcriptions;
 
 class Transcription
 {
-    protected array $lines;
-
     /**
      * Transcription constructor.
      * @param array $lines
      */
-    public function __construct(array $lines)
+    public function __construct(protected array $lines)
     {
         $this->lines = $this->discardInvalidLines(array_map('trim', $lines));
     }
@@ -22,28 +20,22 @@ class Transcription
         return new static($lines);
     }
 
-    public function __toString()
+    public function lines(): Lines
     {
-        return implode("", $this->lines);
-    }
-
-    public function lines(): array
-    {
-        $results = [];
-
-        for ($i = 0; $i < count($this->lines); $i+=2) {
-            $results[] = new Line($this->lines[$i], $this->lines[$i+1]);
-        }
-
-        return $results;
+        return new Lines(array_map(
+            fn($line) => new Line(...$line),
+            array_chunk($this->lines, 3)
+        ));
     }
 
     protected function discardInvalidLines(array $lines): array
     {
-        return array_values(array_filter(
-            $lines,
-            fn ($line) => Line::valid($line)
-        ));
+        return array_slice(array_filter($lines), 1);
+    }
+
+    public function __toString()
+    {
+        return implode("\n", $this->lines);
     }
 
 }

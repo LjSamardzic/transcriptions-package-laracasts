@@ -7,22 +7,24 @@ use Laracasts\Transcriptions\Transcription;
 use PHPUnit\Framework\TestCase;
 
 class TranscriptionTest extends TestCase {
+
+    private Transcription $transcription;
+
+    protected function setUp(): void
+    {
+        $this->transcription = Transcription::load(__DIR__ . '/stubs/example.vtt');
+    }
+
     function test_it_loads_a_vtt_file()
     {
-        $path = __DIR__ . '/stubs/example.vtt';
-
-        $transcription = Transcription::load($path);
-
-        $this->assertStringContainsString('- Never drink liquid nitrogen.', $transcription);
-        $this->assertStringContainsString('- It will perforate your stomach. You could die.', $transcription);
+        $this->assertStringContainsString('- Never drink liquid nitrogen.', $this->transcription);
+        $this->assertStringContainsString('- It will perforate your stomach. You could die.', $this->transcription);
     }
 
 
     function test_it_can_convert_to_array_of_line_objects()
     {
-        $path = __DIR__ . '/stubs/example.vtt';
-
-        $lines = Transcription::load($path)->lines();
+        $lines = $this->transcription->lines();
 
         $this->assertCount(2, $lines);
         $this->assertContainsOnlyInstancesOf(Line::class, $lines);
@@ -30,11 +32,18 @@ class TranscriptionTest extends TestCase {
 
     function test_it_discards_irrelevant_lines_from_the_vtt_file()
     {
-        $path = __DIR__ . '/stubs/example.vtt';
-
-        $transcription = Transcription::load($path);
-
-        $this->assertStringNotContainsString('WEBVTT', $transcription);
-        $this->assertCount(2, $transcription->lines());
+        $this->assertStringNotContainsString('WEBVTT', $this->transcription);
+        $this->assertCount(2, $this->transcription->lines());
     }
+
+    public function test_it_renders_the_lines_as_html()
+    {
+        $expected = <<<EOT
+            <a href="?time=00:01">- Never drink liquid nitrogen.</a>
+            <a href="?time=00:05">- It will perforate your stomach. You could die.</a>
+            EOT;
+
+        $this->assertEquals($expected, $this->transcription->lines()->asHtml());
+    }
+
 }

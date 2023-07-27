@@ -1,5 +1,6 @@
 {
-    "name": "laracasts/transcriptions",
+    "name": "test/transcriptions-clone",
+    "description": "Clone of Laracasts transcriptions tutorial",
     "autoload": {
         "psr-4": {
             "Laracasts\\Transcriptions\\": "src/"
