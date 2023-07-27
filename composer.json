@@ -1,5 +1,5 @@
 {
-    "name": "test/transcriptions-clone",
+    "name": "ljubicas/transcriptions-clone",
     "description": "Clone of Laracasts transcriptions tutorial",
     "autoload": {
         "psr-4": {
